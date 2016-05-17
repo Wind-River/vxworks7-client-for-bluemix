@@ -1,0 +1,24 @@
+/* layer.vsbl file for BlueMix SDK layer */
+/*
+ * Copyright (c) 2016 Wind River Systems, Inc.
+ *
+ * The right to copy, distribute, modify, or otherwise make use
+ * of this software may be licensed only pursuant to the terms
+ * of an applicable Wind River license agreement.
+ */
+/*
+Modification history
+--------------------
+20apr16,msx  Created
+*/
+
+Layer IBM_BLUEMIX
+    {
+    SYNOPSIS         IBM BLUEMIX SDK
+    HELP             This provides the IBM BlueMix SDK
+    VERSION          1.0.0.0
+    VSB_REQUIRES
+    LAYER_REQUIRES   IPNET_COREIP IPNET_DNSC
+    OPTIONAL         YES
+    DEFAULT          NO
+    }

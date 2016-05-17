@@ -1,0 +1,1155 @@
+diff --git a/devicemanagementclient.c b/devicemanagementclient.c
+index e871fc9..bd676f6 100644
+--- a/devicemanagementclient.c
++++ b/devicemanagementclient.c
+@@ -24,7 +24,7 @@
+ #include <time.h>
+ #include "devicemanagementclient.h"
+ 
+-commandCallback cb;
++commandCallback devm_cb;
+ 
+ //util functions
+ void messageCame(MessageData* md);
+@@ -140,7 +140,7 @@ int publishEvent_dm(ManagedDevice *client, char *eventType, char *eventFormat, u
+ void setCommandHandler_dm(ManagedDevice *client, commandCallback handler)
+ {
+ 	setCommandHandler(&deviceClient,handler );//handler
+-	cb = handler;
++	devm_cb = handler;
+ }
+ 
+ /**
+@@ -154,7 +154,7 @@ void setCommandHandler_dm(ManagedDevice *client, commandCallback handler)
+ 
+ void setManagedHandler_dm(ManagedDevice *client, commandCallback handler)
+ {
+-	cb = handler;
++	devm_cb = handler;
+ }
+ 
+ /*
+@@ -539,7 +539,7 @@ void generateUUID(char* uuid_str)
+ //Handler for all commands. Invoke the callback.
+ void messageCame(MessageData* md)
+ {
+-	if(cb != 0) {
++	if(devm_cb != 0) {
+ 		MQTTMessage* message = md->message;
+ 		void *payload = message->payload;
+ 		char *pl = (char*) malloc(sizeof(char)*message->payloadlen+1);
+@@ -562,7 +562,7 @@ void messageCame(MessageData* md)
+ 		if(!strcmp(currentRequestID,reqID))
+ 		{
+ 			interrupt = 1;
+-			(*cb)(status, reqID, payload);
++			(*devm_cb)(status, reqID, payload);
+ 		}
+ 		else
+ 		{
+diff --git a/devicemanagementclient.h b/devicemanagementclient.h
+index b9d5ab6..d98fc30 100644
+--- a/devicemanagementclient.h
++++ b/devicemanagementclient.h
+@@ -20,10 +20,11 @@
+ #ifndef DEVICEMANAGEMENTCLIENT_H_
+ #define DEVICEMANAGEMENTCLIENT_H_
+ 
+-#include "lib/MQTTClient.h"
++#include "MQTTClient.h"
+ #include "iotfclient.h"
+ #include <ctype.h>
+-#include <stdbool.h>
++
++typedef unsigned int bool;
+ 
+ //Macros for the device management requests
+ #define MANAGE "iotdevice-1/mgmt/manage"
+diff --git a/gatewayclient.c b/gatewayclient.c
+index 86fc4ea..f9bd72f 100644
+--- a/gatewayclient.c
++++ b/gatewayclient.c
+@@ -22,7 +22,7 @@
+ #include "gatewayclient.h"
+ 
+ //Command Callback
+-commandCallback cb;
++commandCallback gateway_cb;
+ 
+ //util functions
+ char *trim(char *str);
+@@ -236,7 +236,7 @@ int publishGatewayEvent(GatewayClient *client, char *eventType, char *eventForma
+ */
+ void setGatewayCommandHandler(GatewayClient *client, commandCallback handler)
+ {
+-	cb = handler;
++	gateway_cb = handler;
+ }
+ 
+ /**
+@@ -332,7 +332,7 @@ int disconnectGateway(GatewayClient *client)
+ //Handler for all commands. Invoke the callback.
+ void messageArrived(MessageData* md)
+ {
+-	if(cb != 0) {
++	if(gateway_cb != 0) {
+ 		MQTTMessage* message = md->message;
+ 
+ 		char *topic = malloc(md->topicName->lenstring.len+1);
+@@ -356,7 +356,7 @@ void messageArrived(MessageData* md)
+ 
+ 		free(topic);
+ 
+-		(*cb)(type,id,commandName, format, payload,payloadlen);
++		(*gateway_cb)(type,id,commandName, format, payload,payloadlen);
+ 	}
+ }
+ 
+@@ -474,4 +474,4 @@ int reconnect_delay(int i)
+ 		return 60; // next 10 attempts retry after every 1 minute
+ 
+ 	return 600;	// after 20 attempts, retry every 10 minutes
+-}
+\ No newline at end of file
++}
+diff --git a/iotfclient.c b/iotfclient.c
+index 3d1ea92..b0c6e21 100644
+--- a/iotfclient.c
++++ b/iotfclient.c
+@@ -24,7 +24,7 @@
+ #include "iotfclient.h"
+ 
+ //Command Callback
+-commandCallback cb;
++commandCallback iotf_cb;
+ 
+ //util functions
+ char *trim(char *str);
+@@ -119,17 +119,36 @@ int connectiotf(Iotfclient *client)
+ 	const char* messagingUrl = ".messaging.internetofthings.ibmcloud.com";
+ 
+ 	char hostname[strlen(client->config.org) + strlen(messagingUrl) + 1];
+-	
+-	sprintf(hostname, "%s%s", client->config.org, messagingUrl);
+ 
+-    //TODO : change to 8883 if registered, add support when available in MQTTClient
+-    int port = 1883;
++	sprintf(hostname, "%s%s", client->config.org, messagingUrl);
+ 
+     char clientId[strlen(client->config.org) + strlen(client->config.type) + strlen(client->config.id) + 5];
+     sprintf(clientId, "d:%s:%s:%s", client->config.org, client->config.type, client->config.id);
+ 
+-	NewNetwork(&client->n);
+-	ConnectNetwork(&client->n, hostname, port);
++#ifdef _WRS_CONFIG_OPENSSL
++	Network *network;
++	if (client->with_ssl) {
++		network = (Network *) (&(client->n.openssln));
++		NewOpenSSLNetwork((OpenSSLNetwork *) network);
++		rc = ConnectOpenSSLNetwork((OpenSSLNetwork *) network, client->CAfile, hostname, 8883);
++	} else {
++		network = &(client->n.plain);
++		NewNetwork(network);
++		rc = ConnectNetwork(network, hostname, 1883);
++	}
++#else
++	Network *network = &(client->n.plain);
++	NewNetwork(network);
++	rc = ConnectNetwork(network, hostname, 1883);
++#endif
++
++	if (rc != 0) {
++		disconnect(client);
++		return rc;
++	}
++
++    memset(client->buf, 0, sizeof(client->buf));
++    memset(client->readbuf, 0, sizeof(client->readbuf));
+ 	MQTTClient(&client->c, &client->n, 1000, client->buf, 1000, client->readbuf, 1000);
+  
+ 	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;       
+@@ -185,8 +204,9 @@ int publishEvent(Iotfclient *client, char *eventType, char *eventFormat, unsigne
+ 
+ 	if(rc != SUCCESS) {
+ 		printf("connection lost.. \n");
++
+ 		retry_connection(client);
+-		rc = MQTTPublish(&client->c, publishTopic , &pub);
++	    rc = MQTTPublish(&client->c, publishTopic , &pub);
+ 	}
+ 	
+ 	return rc;
+@@ -201,7 +221,7 @@ int publishEvent(Iotfclient *client, char *eventType, char *eventFormat, unsigne
+ */
+ void setCommandHandler(Iotfclient *client, commandCallback handler)
+ {
+-	cb = handler;
++	iotf_cb = handler;
+ }
+ 
+ /**
+@@ -249,8 +269,18 @@ int isConnected(Iotfclient *client)
+ int disconnect(Iotfclient *client)
+ {
+ 	int rc = 0;
++#ifdef _WRS_CONFIG_OPENSSL
++  Network *network;
++  if (client->with_ssl) {
++    network = (Network *) (&(client->n.openssln));
++  } else {
++    network = &(client->n.plain);
++  }
++#else
++  Network *network = &(client->n.plain);
++#endif
+ 	rc = MQTTDisconnect(&client->c);
+-	client->n.disconnect(&client->n);
++	network->disconnect(network);
+ 
+ 	return rc;
+ 
+@@ -259,14 +289,15 @@ int disconnect(Iotfclient *client)
+ //Handler for all commands. Invoke the callback.
+ void messageArrived(MessageData* md)
+ {
+-	if(cb != 0) {
++	if(iotf_cb != 0) {
+ 		MQTTMessage* message = md->message;
+ 
+ 		char *topic = malloc(md->topicName->lenstring.len+1);
+ 
+ 		sprintf(topic,"%.*s",md->topicName->lenstring.len,md->topicName->lenstring.data);
+ 
+-		void *payload = message->payload;
++        char *payload = malloc(message->payloadlen + 1);
++        snprintf(payload, message->payloadlen + 1, "%s", message->payload);
+ 
+ 		strtok(topic, "/");
+ 		strtok(NULL, "/");
+@@ -277,7 +308,9 @@ void messageArrived(MessageData* md)
+ 
+ 		free(topic);
+ 
+-		(*cb)(commandName, format, payload);
++		(*iotf_cb)(commandName, format, (void *)payload);
++        if(payload != NULL)
++            free(payload);
+ 	}
+ }
+ 
+@@ -369,7 +402,7 @@ int length(char *str)
+ }
+ 
+ //Staggered retry
+-int retry_connection(Iotfclient *client) 
++int retry_connection(Iotfclient *client)
+ {
+ 	int retry = 1;
+ 	printf("Attempting to connect\n");
+@@ -381,6 +414,10 @@ int retry_connection(Iotfclient *client)
+ 		printf(" next attempt in %d seconds\n", delay);
+ 		sleep(delay);
+ 	}
++
++	/* Return success if we get here */
++	return SUCCESS;
++
+ }
+ 
+ /* Reconnect delay time 
+diff --git a/iotfclient.h b/iotfclient.h
+index 140b0a6..804aa36 100644
+--- a/iotfclient.h
++++ b/iotfclient.h
+@@ -21,6 +21,9 @@
+ 
+ #include "MQTTClient.h"
+ #include <ctype.h>
++#ifdef _WRS_CONFIG_OPENSSL
++#include "openssl.h"
++#endif
+ 
+ // all failure return codes must be negative(extending from mqttclient)
+ enum errorCodes { CONFIG_FILE_ERROR = -3, MISSING_INPUT_PARAM = -4 };
+@@ -37,7 +40,16 @@ struct config {
+ //iotfclient
+ struct iotfclient
+ {
+-	Network n;
++	int with_ssl;
++    char* CAfile;
++
++  union {
++	  Network plain;
++#ifdef _WRS_CONFIG_OPENSSL
++	  OpenSSLNetwork openssln;
++#endif
++	} n;
++
+ 	Client c;
+ 	struct config config;
+ 
+diff --git a/lib/MQTTClient.h b/lib/MQTTClient.h
+index 71da49a..fa58dc3 100644
+--- a/lib/MQTTClient.h
++++ b/lib/MQTTClient.h
+@@ -19,7 +19,7 @@
+ 
+ #include "MQTTPacket.h"
+ #include "stdio.h"
+-#include "MQTTLinux.h" //Platform specific implementation header file
++#include "MQTTVxWorks.h" //Platform specific implementation header file
+ 
+ #define MAX_PACKET_ID 65535
+ #define MAX_MESSAGE_HANDLERS 5
+diff --git a/lib/MQTTDeserializePublish.c b/lib/MQTTDeserializePublish.c
+index dafb6a3..03f507a 100644
+--- a/lib/MQTTDeserializePublish.c
++++ b/lib/MQTTDeserializePublish.c
+@@ -18,8 +18,6 @@
+ #include "MQTTPacket.h"
+ #include <string.h>
+ 
+-#define min(a, b) ((a < b) ? 1 : 0)
+-
+ /**
+   * Deserializes the supplied (wire) buffer into publish data
+   * @param dup returned integer - the MQTT dup flag
+diff --git a/lib/MQTTLinux.c b/lib/MQTTLinux.c
+deleted file mode 100644
+index 649c1af..0000000
+--- a/lib/MQTTLinux.c
++++ /dev/null
+@@ -1,167 +0,0 @@
+-/*******************************************************************************
+- * Copyright (c) 2014 IBM Corp.
+- *
+- * All rights reserved. This program and the accompanying materials
+- * are made available under the terms of the Eclipse Public License v1.0
+- * and Eclipse Distribution License v1.0 which accompany this distribution.
+- *
+- * The Eclipse Public License is available at
+- *    http://www.eclipse.org/legal/epl-v10.html
+- * and the Eclipse Distribution License is available at
+- *   http://www.eclipse.org/org/documents/edl-v10.php.
+- *
+- * Contributors:
+- *    Allan Stockdill-Mander - initial API and implementation and/or initial documentation
+- *******************************************************************************/
+-
+-#include "MQTTLinux.h"
+-
+-char expired(Timer* timer)
+-{
+-	struct timeval now, res;
+-	gettimeofday(&now, NULL);
+-	timersub(&timer->end_time, &now, &res);		
+-	return res.tv_sec < 0 || (res.tv_sec == 0 && res.tv_usec <= 0);
+-}
+-
+-
+-void countdown_ms(Timer* timer, unsigned int timeout)
+-{
+-	struct timeval now;
+-	gettimeofday(&now, NULL);
+-	struct timeval interval = {timeout / 1000, (timeout % 1000) * 1000};
+-	timeradd(&now, &interval, &timer->end_time);
+-}
+-
+-
+-void countdown(Timer* timer, unsigned int timeout)
+-{
+-	struct timeval now;
+-	gettimeofday(&now, NULL);
+-	struct timeval interval = {timeout, 0};
+-	timeradd(&now, &interval, &timer->end_time);
+-}
+-
+-
+-int left_ms(Timer* timer)
+-{
+-	struct timeval now, res;
+-	gettimeofday(&now, NULL);
+-	timersub(&timer->end_time, &now, &res);
+-	//printf("left %d ms\n", (res.tv_sec < 0) ? 0 : res.tv_sec * 1000 + res.tv_usec / 1000);
+-	return (res.tv_sec < 0) ? 0 : res.tv_sec * 1000 + res.tv_usec / 1000;
+-}
+-
+-
+-void InitTimer(Timer* timer)
+-{
+-	timer->end_time = (struct timeval){0, 0};
+-}
+-
+-
+-int linux_read(Network* n, unsigned char* buffer, int len, int timeout_ms)
+-{
+-	struct timeval interval = {timeout_ms / 1000, (timeout_ms % 1000) * 1000};
+-	if (interval.tv_sec < 0 || (interval.tv_sec == 0 && interval.tv_usec <= 0))
+-	{
+-		interval.tv_sec = 0;
+-		interval.tv_usec = 100;
+-	}
+-
+-	setsockopt(n->my_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&interval, sizeof(struct timeval));
+-
+-	int bytes = 0;
+-	while (bytes < len)
+-	{
+-		int rc = recv(n->my_socket, &buffer[bytes], (size_t)(len - bytes), 0);
+-		if (rc == -1)
+-		{
+-			if (errno != ENOTCONN && errno != ECONNRESET)
+-			{
+-				bytes = -1;
+-				break;
+-			}
+-		}
+-		else
+-			bytes += rc;
+-	}
+-	return bytes;
+-}
+-
+-
+-int linux_write(Network* n, unsigned char* buffer, int len, int timeout_ms)
+-{
+-	struct timeval tv;
+-
+-	tv.tv_sec = 0;  /* 30 Secs Timeout */
+-	tv.tv_usec = timeout_ms * 1000;  // Not init'ing this can cause strange errors
+-
+-	setsockopt(n->my_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
+-	int	rc = write(n->my_socket, buffer, len);
+-	return rc;
+-}
+-
+-
+-void linux_disconnect(Network* n)
+-{
+-	close(n->my_socket);
+-}
+-
+-
+-void NewNetwork(Network* n)
+-{
+-	n->my_socket = 0;
+-	n->mqttread = linux_read;
+-	n->mqttwrite = linux_write;
+-	n->disconnect = linux_disconnect;
+-}
+-
+-
+-int ConnectNetwork(Network* n, char* addr, int port)
+-{
+-	int type = SOCK_STREAM;
+-	struct sockaddr_in address;
+-	int rc = -1;
+-	sa_family_t family = AF_INET;
+-	struct addrinfo *result = NULL;
+-	struct addrinfo hints = {0, AF_UNSPEC, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL, NULL};
+-
+-	if ((rc = getaddrinfo(addr, NULL, &hints, &result)) == 0)
+-	{
+-		struct addrinfo* res = result;
+-
+-		/* prefer ip4 addresses */
+-		while (res)
+-		{
+-			if (res->ai_family == AF_INET)
+-			{
+-				result = res;
+-				break;
+-			}
+-			res = res->ai_next;
+-		}
+-
+-		if (result->ai_family == AF_INET)
+-		{
+-			address.sin_port = htons(port);
+-			address.sin_family = family = AF_INET;
+-			address.sin_addr = ((struct sockaddr_in*)(result->ai_addr))->sin_addr;
+-		}
+-		else
+-			rc = -1;
+-
+-		freeaddrinfo(result);
+-	}
+-
+-	if (rc == 0)
+-	{
+-		n->my_socket = socket(family, type, 0);
+-		if (n->my_socket != -1)
+-		{
+-			int opt = 1;			
+-			rc = connect(n->my_socket, (struct sockaddr*)&address, sizeof(address));
+-		}
+-	}
+-
+-	return rc;
+-}
+\ No newline at end of file
+diff --git a/lib/MQTTLinux.h b/lib/MQTTLinux.h
+deleted file mode 100644
+index 6a56376..0000000
+--- a/lib/MQTTLinux.h
++++ /dev/null
+@@ -1,68 +0,0 @@
+-/*******************************************************************************
+- * Copyright (c) 2014 IBM Corp.
+- *
+- * All rights reserved. This program and the accompanying materials
+- * are made available under the terms of the Eclipse Public License v1.0
+- * and Eclipse Distribution License v1.0 which accompany this distribution.
+- *
+- * The Eclipse Public License is available at
+- *    http://www.eclipse.org/legal/epl-v10.html
+- * and the Eclipse Distribution License is available at
+- *   http://www.eclipse.org/org/documents/edl-v10.php.
+- *
+- * Contributors:
+- *    Allan Stockdill-Mander - initial API and implementation and/or initial documentation
+- *******************************************************************************/
+-
+-#ifndef __MQTT_LINUX_
+-#define __MQTT_LINUX_
+-
+-#include <sys/types.h>
+-#include <sys/socket.h>
+-#include <sys/param.h>
+-#include <sys/time.h>
+-#include <sys/select.h>
+-#include <netinet/in.h>
+-#include <netinet/tcp.h>
+-#include <arpa/inet.h>
+-#include <netdb.h>
+-#include <stdio.h>
+-#include <unistd.h>
+-#include <errno.h>
+-#include <fcntl.h>
+-
+-#include <stdlib.h>
+-#include <string.h>
+-#include <signal.h>
+-
+-typedef struct Timer Timer;
+-
+-struct Timer {
+-	struct timeval end_time;
+-};
+-
+-typedef struct Network Network;
+-
+-struct Network
+-{
+-	int my_socket;
+-	int (*mqttread) (Network*, unsigned char*, int, int);
+-	int (*mqttwrite) (Network*, unsigned char*, int, int);
+-	void (*disconnect) (Network*);
+-};
+-
+-char expired(Timer*);
+-void countdown_ms(Timer*, unsigned int);
+-void countdown(Timer*, unsigned int);
+-int left_ms(Timer*);
+-
+-void InitTimer(Timer*);
+-
+-int linux_read(Network*, unsigned char*, int, int);
+-int linux_write(Network*, unsigned char*, int, int);
+-void linux_disconnect(Network*);
+-void NewNetwork(Network*);
+-
+-int ConnectNetwork(Network*, char*, int);
+-
+-#endif
+\ No newline at end of file
+diff --git a/lib/MQTTVxWorks.c b/lib/MQTTVxWorks.c
+new file mode 100644
+index 0000000..82c2816
+--- /dev/null
++++ b/lib/MQTTVxWorks.c
+@@ -0,0 +1,179 @@
++/* MQTTVxWorks.c - mqtt interface file for VxWorks-7 */
++
++/* Copyright (c) 2016, Wind River Systems, Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without modification, are
++ * permitted provided that the following conditions are met:
++ *
++ * 1) Redistributions of source code must retain the above copyright notice,
++ * this list of conditions and the following disclaimer.
++ *
++ * 2) Redistributions in binary form must reproduce the above copyright notice,
++ * this list of conditions and the following disclaimer in the documentation and/or
++ * other materials provided with the distribution.
++ *
++ * 3) Neither the name of Wind River Systems nor the names of its contributors may be
++ * used to endorse or promote products derived from this software without specific
++ * prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++ * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include "MQTTVxWorks.h"
++
++char expired(Timer* timer)
++{
++    struct timeval now, res;
++    gettimeofday(&now, NULL);
++    ip_timeval_sub(&timer->end_time, &now, &res);
++    return res.tv_sec < 0 || (res.tv_sec == 0 && res.tv_usec <= 0);
++}
++
++
++void countdown_ms(Timer* timer, unsigned int timeout)
++{
++    struct timeval now;
++    gettimeofday(&now, NULL);
++    struct timeval interval = {timeout / 1000, (timeout % 1000) * 1000};
++    ip_timeval_add(&now, &interval, &timer->end_time);
++}
++
++
++void countdown(Timer* timer, unsigned int timeout)
++{
++    struct timeval now;
++    gettimeofday(&now, NULL);
++    struct timeval interval = {timeout, 0};
++    ip_timeval_add(&now, &interval, &timer->end_time);
++}
++
++
++int left_ms(Timer* timer)
++{
++    struct timeval now, res;
++    gettimeofday(&now, NULL);
++    ip_timeval_sub(&timer->end_time, &now, &res);
++    return (res.tv_sec < 0) ? 0 : res.tv_sec * 1000 + res.tv_usec / 1000;
++}
++
++
++void InitTimer(Timer* timer)
++{
++    timer->end_time = (struct Ip_timeval){0, 0};
++}
++
++
++int vxworks_read(Network* n, unsigned char* buffer, int len, int timeout_ms)
++{
++    struct timeval interval = {timeout_ms / 1000, (timeout_ms % 1000) * 1000};
++    if (interval.tv_sec < 0 || (interval.tv_sec == 0 && interval.tv_usec <= 0))
++    {
++        interval.tv_sec = 0;
++        interval.tv_usec = 100;
++    }
++
++    setsockopt(n->my_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&interval, sizeof(struct timeval));
++
++    int bytes = 0;
++    while (bytes < len)
++    {
++        int rc = recv(n->my_socket, &buffer[bytes], (size_t)(len - bytes), 0);
++        if (rc == -1)
++        {
++            if (errno != ENOTCONN && errno != ECONNRESET)
++            {
++                bytes = -1;
++                break;
++            }
++        }
++        else
++            bytes += rc;
++    }
++    return bytes;
++}
++
++
++int vxworks_write(Network* n, unsigned char* buffer, int len, int timeout_ms)
++{
++    struct timeval tv;
++
++    tv.tv_sec = 0;  /* 30 Secs Timeout */
++    tv.tv_usec = timeout_ms * 1000;  // Not init'ing this can cause strange errors
++
++    setsockopt(n->my_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv,sizeof(struct timeval));
++    int    rc = write(n->my_socket, (char *)buffer, len);
++    return rc;
++}
++
++
++void vxworks_disconnect(Network* n)
++{
++    close(n->my_socket);
++}
++
++
++void NewNetwork(Network* n)
++{
++    n->my_socket = 0;
++    n->mqttread = vxworks_read;
++    n->mqttwrite = vxworks_write;
++    n->disconnect = vxworks_disconnect;
++}
++
++
++int ConnectNetwork(Network* n, char* addr, int port)
++{
++    int type = SOCK_STREAM;
++    struct sockaddr_in address;
++    int rc = -1;
++    sa_family_t family = AF_INET;
++    struct addrinfo *result = NULL;
++    struct addrinfo hints = {0, AF_UNSPEC, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL, NULL};
++
++    if ((rc = getaddrinfo(addr, NULL, &hints, &result)) == 0)
++    {
++        struct addrinfo* res = result;
++
++        /* prefer ip4 addresses */
++        while (res)
++        {
++            if (res->ai_family == AF_INET)
++            {
++                result = res;
++                break;
++            }
++            res = res->ai_next;
++        }
++
++        if (result->ai_family == AF_INET)
++        {
++            address.sin_port = htons(port);
++            address.sin_family = family = AF_INET;
++            address.sin_addr = ((struct sockaddr_in*)(result->ai_addr))->sin_addr;
++        }
++        else
++            rc = -1;
++
++        freeaddrinfo(result);
++    }
++
++    if (rc == 0)
++    {
++        n->my_socket = socket(family, type, 0);
++        if (n->my_socket != -1)
++        {
++            rc = connect(n->my_socket, (struct sockaddr*)&address, sizeof(address));
++        }
++    }
++
++    return rc;
++}
+diff --git a/lib/MQTTVxWorks.h b/lib/MQTTVxWorks.h
+new file mode 100644
+index 0000000..f41c567
+--- /dev/null
++++ b/lib/MQTTVxWorks.h
+@@ -0,0 +1,85 @@
++/* MQTTVxWorks.h - mqtt header file for VxWorks-7 */
++
++/* Copyright (c) 2016, Wind River Systems, Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without modification, are
++ * permitted provided that the following conditions are met:
++ *
++ * 1) Redistributions of source code must retain the above copyright notice,
++ * this list of conditions and the following disclaimer.
++ *
++ * 2) Redistributions in binary form must reproduce the above copyright notice,
++ * this list of conditions and the following disclaimer in the documentation and/or
++ * other materials provided with the distribution.
++ *
++ * 3) Neither the name of Wind River Systems nor the names of its contributors may be
++ * used to endorse or promote products derived from this software without specific
++ * prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++ * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#ifndef __MQTT_VXWORKS_
++#define __MQTT_VXWORKS_
++
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <net/socketvar.h>
++#include <sockLib.h>
++#include <ctype.h>
++#include <sys/time.h>
++#include <ipcom_time.h>
++#include <netinet/in.h>
++#include <netinet/tcp.h>
++#include <arpa/inet.h>
++#include <netdb.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <errno.h>
++#include <fcntl.h>
++
++#include <stdlib.h>
++#include <string.h>
++#include <signal.h>
++
++typedef struct Timer Timer;
++
++/* Ip_timeval struct is same as timeval struct */
++struct Timer {
++    struct Ip_timeval end_time;
++};
++
++typedef struct Network Network;
++
++struct Network
++{
++    int my_socket;
++    int (*mqttread) (Network*, unsigned char*, int, int);
++    int (*mqttwrite) (Network*, unsigned char*, int, int);
++    void (*disconnect) (Network*);
++};
++
++char expired(Timer*);
++void countdown_ms(Timer*, unsigned int);
++void countdown(Timer*, unsigned int);
++int left_ms(Timer*);
++
++void InitTimer(Timer*);
++
++int vxworks_read(Network*, unsigned char*, int, int);
++int vxworks_write(Network*, unsigned char*, int, int);
++void vxworks_disconnect(Network*);
++void NewNetwork(Network*);
++
++int ConnectNetwork(Network*, char*, int);
++
++#endif
+diff --git a/memory.h b/memory.h
+new file mode 100644
+index 0000000..e32a09b
+--- /dev/null
++++ b/memory.h
+@@ -0,0 +1,36 @@
++/* memory.h - stub memory header file */
++
++/* Copyright (c) 2016, Wind River Systems, Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without modification, are
++ * permitted provided that the following conditions are met:
++ *
++ * 1) Redistributions of source code must retain the above copyright notice,
++ * this list of conditions and the following disclaimer.
++ *
++ * 2) Redistributions in binary form must reproduce the above copyright notice,
++ * this list of conditions and the following disclaimer in the documentation and/or
++ * other materials provided with the distribution.
++ *
++ * 3) Neither the name of Wind River Systems nor the names of its contributors may be
++ * used to endorse or promote products derived from this software without specific
++ * prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++ * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#ifndef __INCmemoryh
++#define __INCmemoryh
++
++#include <stdlib.h>
++
++#endif /* __INCmemoryh */
+diff --git a/openssl.c b/openssl.c
+new file mode 100644
+index 0000000..c5f61ee
+--- /dev/null
++++ b/openssl.c
+@@ -0,0 +1,207 @@
++/**************************************************************************************
++ * Copyright (c) 2016, Wind River Systems, Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without modification, are
++ * permitted provided that the following conditions are met:
++ *
++ * 1) Redistributions of source code must retain the above copyright notice,
++ * this list of conditions and the following disclaimer.
++ *
++ * 2) Redistributions in binary form must reproduce the above copyright notice,
++ * this list of conditions and the following disclaimer in the documentation and/or
++ * other materials provided with the distribution.
++ *
++ * 3) Neither the name of Wind River Systems nor the names of its contributors may be
++ * used to endorse or promote products derived from this software without specific
++ * prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++ * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ **************************************************************************************/
++
++#include "openssl.h"
++
++#ifdef _WRS_CONFIG_OPENSSL
++int openssl_mqttread(Network *n, unsigned char *buffer, int len, int timeout_ms)
++{
++    OpenSSLNetwork *ssl_network = (OpenSSLNetwork *) n;
++    int bytes, rc;
++    struct timeval interval = {timeout_ms / 1000, (timeout_ms % 1000) * 1000};
++    if (interval.tv_sec < 0 || (interval.tv_sec == 0 && interval.tv_usec <= 0)) {
++        interval.tv_sec = 0;
++        interval.tv_usec = 100;
++    }
++
++    setsockopt(ssl_network->socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&interval, sizeof(struct timeval));
++
++    bytes = 0;
++    while (bytes < len) {
++        rc = SSL_read(ssl_network->handle, (buffer + bytes), (len - bytes));
++        if (rc < 0) {
++            return rc;
++        } else if (rc == 0) {
++            return bytes;
++        } else {
++            bytes += rc;
++        }
++    }
++    return bytes;
++}
++
++int openssl_mqttwrite(Network *n, unsigned char *buffer, int len, int timeout_ms)
++{
++    OpenSSLNetwork *ssl_network = (OpenSSLNetwork *) n;
++    struct timeval interval = {timeout_ms / 1000, (timeout_ms % 1000) * 1000};
++    if (interval.tv_sec < 0 || (interval.tv_sec == 0 && interval.tv_usec <= 0)) {
++        interval.tv_sec = 0;
++        interval.tv_usec = 100;
++    }
++
++    setsockopt(ssl_network->socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&interval, sizeof(struct timeval));
++    return SSL_write(ssl_network->handle, buffer, len);
++}
++
++void openssl_disconnect(Network *n)
++{
++    OpenSSLNetwork *ssl_network = (OpenSSLNetwork *) n;
++    if (ssl_network->socket > 0) {
++        close(ssl_network->socket);
++        ssl_network->socket = 0;
++    }
++
++    if (ssl_network->handle) {
++        SSL_shutdown(ssl_network->handle);
++        SSL_free(ssl_network->handle);
++        ssl_network->handle = NULL;
++    }
++
++    if (ssl_network->context) {
++        SSL_CTX_free(ssl_network->context);
++        ssl_network->context = NULL;
++    }
++}
++
++void NewOpenSSLNetwork(OpenSSLNetwork *n)
++{
++    n->socket = 0;
++    n->mqttread = openssl_mqttread;
++    n->mqttwrite = openssl_mqttwrite;
++    n->disconnect = openssl_disconnect;
++    n->handle = NULL;
++    n->context = NULL;
++}
++
++void ShowCerts(SSL *ssl)
++{
++    X509 *cert;
++    char *line;
++
++    cert = SSL_get_peer_certificate(ssl);
++    if (cert != NULL)
++    {
++        line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
++        printf("Certificate Subject:%s\n",line);
++        free(line);
++        line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
++        printf("Certificate Issuer:%s\n",line);
++        free(line);
++        X509_free(cert);
++    }
++    else{
++        printf("No certificate Info!!\n");
++    }
++}
++
++int ConnectOpenSSLNetwork(OpenSSLNetwork *n, char *CAfile, char *addr, int port)
++{
++    struct sockaddr_in address;
++    int rc = -1;
++    sa_family_t family;
++    struct addrinfo *result = NULL;
++    struct addrinfo hints = {0, AF_UNSPEC, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL, NULL};
++    struct addrinfo *res = NULL;
++
++    if ((rc = getaddrinfo(addr, NULL, &hints, &result)) == 0) {
++        res = result;
++        while (res) {
++        if (res->ai_family == AF_INET) {
++            result = res;
++            break;
++        }
++        res = res->ai_next;
++        }
++        if (result->ai_family == AF_INET) {
++            address.sin_port = htons(port);
++            address.sin_family = family = AF_INET;
++            address.sin_addr = ((struct sockaddr_in*)(result->ai_addr))->sin_addr;
++        } else {
++            rc = -1;
++        }
++        freeaddrinfo(result);
++    }
++    if (rc < 0) { return rc; }
++
++    n->socket = socket(family, SOCK_STREAM, 0);
++    if (n->socket == -1) { return -1; }
++        rc = connect(n->socket, (struct sockaddr *) &address, sizeof(address));
++    if (rc < 0) { return rc; }
++
++    /* SSL part */
++    SSL_load_error_strings();
++    SSL_library_init();
++
++    n->context = SSL_CTX_new(SSLv23_client_method());
++    if (n->context == NULL) {
++        ERR_print_errors_fp(stderr);
++        openssl_disconnect((Network *) n);
++        return -1;
++    }
++
++    SSL_CTX_set_verify(n->context, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
++
++    if (!SSL_CTX_load_verify_locations(n->context, CAfile, NULL)){
++        ERR_print_errors_fp(stderr);
++        openssl_disconnect((Network *) n);
++        return -1;
++    }
++
++    rc = SSL_CTX_set_options(n->context, SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3);
++    if (rc < 0) {
++        ERR_print_errors_fp(stderr);
++        openssl_disconnect((Network *) n);
++        return -1;
++    }
++
++    n->handle = SSL_new(n->context);
++    if (n->handle == NULL) {
++        ERR_print_errors_fp(stderr);
++        openssl_disconnect((Network *) n);
++        return -1;
++    }
++
++    if (!SSL_set_fd(n->handle, n->socket)) {
++        ERR_print_errors_fp(stderr);
++        openssl_disconnect((Network *) n);
++        return -1;
++    }
++
++    if (SSL_connect(n->handle) != 1) {
++        ERR_print_errors_fp(stderr);
++        openssl_disconnect((Network *) n);
++        return -1;
++    }else{
++        printf("Connected with %s encryption\n", SSL_get_cipher(n->handle));
++        /* ShowCerts(n->handle); */
++    }
++
++    return 0;
++}
++#endif
+diff --git a/openssl.h b/openssl.h
+new file mode 100644
+index 0000000..f9aa64f
+--- /dev/null
++++ b/openssl.h
+@@ -0,0 +1,52 @@
++/**************************************************************************************
++ * Copyright (c) 2016, Wind River Systems, Inc.
++ *
++ * Redistribution and use in source and binary forms, with or without modification, are
++ * permitted provided that the following conditions are met:
++ *
++ * 1) Redistributions of source code must retain the above copyright notice,
++ * this list of conditions and the following disclaimer.
++ *
++ * 2) Redistributions in binary form must reproduce the above copyright notice,
++ * this list of conditions and the following disclaimer in the documentation and/or
++ * other materials provided with the distribution.
++ *
++ * 3) Neither the name of Wind River Systems nor the names of its contributors may be
++ * used to endorse or promote products derived from this software without specific
++ * prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++ * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ **************************************************************************************/
++
++/* Paho-compatible Network implementation using OpenSSL */
++
++#include "MQTTVxWorks.h"
++
++#ifdef _WRS_CONFIG_OPENSSL
++
++#include <openssl/rand.h>
++#include <openssl/ssl.h>
++#include <openssl/err.h>
++
++typedef struct OpenSSLNetwork {
++    int socket;
++    int (*mqttread) (Network*, unsigned char*, int, int);
++    int (*mqttwrite) (Network*, unsigned char*, int, int);
++    void (*disconnect) (Network*);
++
++    SSL *handle;
++    SSL_CTX *context;
++} OpenSSLNetwork;
++
++void NewOpenSSLNetwork(OpenSSLNetwork*);
++int ConnectOpenSSLNetwork(OpenSSLNetwork*, char*, char*, int);
++#endif
