@@ -302,19 +302,35 @@ index 71da49a..fa58dc3 100644
  
  #define MAX_PACKET_ID 65535
  #define MAX_MESSAGE_HANDLERS 5
-diff --git a/lib/MQTTDeserializePublish.c b/lib/MQTTDeserializePublish.c
-index dafb6a3..03f507a 100644
---- a/lib/MQTTDeserializePublish.c
-+++ b/lib/MQTTDeserializePublish.c
-@@ -18,8 +18,6 @@
+diff --git a/lib/MQTTConnectServer.c b/lib/MQTTConnectServer.c
+index 07c7cb5..5cd86cf 100644
+--- a/lib/MQTTConnectServer.c
++++ b/lib/MQTTConnectServer.c
+@@ -18,8 +18,9 @@
  #include "MQTTPacket.h"
  #include <string.h>
  
--#define min(a, b) ((a < b) ? 1 : 0)
++#ifndef min
+ #define min(a, b) ((a < b) ? a : b)
 -
++#endif
+ 
+ /**
+   * Validates MQTT protocol name and version combinations
+diff --git a/lib/MQTTDeserializePublish.c b/lib/MQTTDeserializePublish.c
+index dafb6a3..f4a40c2 100644
+--- a/lib/MQTTDeserializePublish.c
++++ b/lib/MQTTDeserializePublish.c
+@@ -18,7 +18,9 @@
+ #include "MQTTPacket.h"
+ #include <string.h>
+ 
++#ifndef min
+ #define min(a, b) ((a < b) ? 1 : 0)
++#endif
+ 
  /**
    * Deserializes the supplied (wire) buffer into publish data
-   * @param dup returned integer - the MQTT dup flag
 diff --git a/lib/MQTTLinux.c b/lib/MQTTLinux.c
 deleted file mode 100644
 index 649c1af..0000000
@@ -884,7 +900,7 @@ index 0000000..e32a09b
 +#endif /* __INCmemoryh */
 diff --git a/openssl.c b/openssl.c
 new file mode 100644
-index 0000000..c5f61ee
+index 0000000..085c9ae
 --- /dev/null
 +++ b/openssl.c
 @@ -0,0 +1,207 @@
@@ -1055,7 +1071,7 @@ index 0000000..c5f61ee
 +        return -1;
 +    }
 +
-+    SSL_CTX_set_verify(n->context, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
++    SSL_CTX_set_verify(n->context, SSL_VERIFY_PEER, NULL);
 +
 +    if (!SSL_CTX_load_verify_locations(n->context, CAfile, NULL)){
 +        ERR_print_errors_fp(stderr);
