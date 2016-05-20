@@ -900,10 +900,10 @@ index 0000000..e32a09b
 +#endif /* __INCmemoryh */
 diff --git a/openssl.c b/openssl.c
 new file mode 100644
-index 0000000..085c9ae
+index 0000000..7619761
 --- /dev/null
 +++ b/openssl.c
-@@ -0,0 +1,207 @@
+@@ -0,0 +1,213 @@
 +/**************************************************************************************
 + * Copyright (c) 2016, Wind River Systems, Inc.
 + *
@@ -948,6 +948,9 @@ index 0000000..085c9ae
 +
 +    setsockopt(ssl_network->socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&interval, sizeof(struct timeval));
 +
++    if(ssl_network->handle == NULL)
++        return -1;
++
 +    bytes = 0;
 +    while (bytes < len) {
 +        rc = SSL_read(ssl_network->handle, (buffer + bytes), (len - bytes));
@@ -972,6 +975,9 @@ index 0000000..085c9ae
 +    }
 +
 +    setsockopt(ssl_network->socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&interval, sizeof(struct timeval));
++    if(ssl_network->handle == NULL)
++        return -1;
++
 +    return SSL_write(ssl_network->handle, buffer, len);
 +}
 +
