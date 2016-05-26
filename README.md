@@ -6,7 +6,7 @@
 
 ### Overview
 
-This Readme page provides a quick summary of how to build and run the IBM Bluemix SDK that will reside in VxWorks 7 on your device. The IBM Bluemix SDK is an embedded C client library for interacting with the IBM Watson Internet of Things (IoT) Platform. This client library is not provided in VxWorks 7 RPM packages or on the VxWorks 7 product DVDs . You will need to manually install this library on VxWorks 7.
+This README page provides a quick summary of how to build and run the IBM Bluemix SDK that will reside in VxWorks 7 on your device. The IBM Bluemix SDK is an embedded C client library for interacting with the IBM Watson Internet of Things (IoT) Platform. This client library is not provided in VxWorks 7 RPM packages or on the VxWorks 7 product DVDs . You will need to manually install this library on VxWorks 7.
 
 ### Installation
 
@@ -90,9 +90,9 @@ VSB and VIP could be created in workbench UI environment as well as command line
 
     Now you can bring up your device, and it will auto-run the Bluemix SDK in a VxWorks RTP. 
 
-### Run image and view the visualization
+### View the device information at website
 
-You can run your device image with the Bluemix SDK and view the device dashboard at the IBM Bluemix website. 
+You can run your device image with the Bluemix SDK and then view the device information dashboard at the IBM Bluemix website.
 
 * For the quickstart connection  
     View connection status here:  
@@ -106,11 +106,11 @@ You can run your device image with the Bluemix SDK and view the device dashboard
 
     'https://${ORG_ID}.internetofthings.ibmcloud.com/dashboard/#/devices/browse'  
 
-    Replace ${ORG_ID} with your organization’s ID that is registered in IBM Bluemix. For example:
+    Replace ${ORG_ID} with your organization's ID that is registered in IBM Bluemix. For example:
 
     'https://8hvetd.internetofthings.ibmcloud.com/dashboard/#/devices/browse'  
 
 * View application dashboard  
-    You can also create the Node-RED application in the IBM Bluemix platform and view Bluemix cloud application dashboard here:  
+    You can also create the Node-RED application in the IBM Bluemix platform and view the application dashboard here:
 
     'https://console.ng.bluemix.net/?direct=classic/#/resources'
