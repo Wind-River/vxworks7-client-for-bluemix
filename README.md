@@ -30,7 +30,7 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 
 * Set environment variable
 
-        set WIND_WRTOOL_WORKSPACE=$HOME/WindRiver/workspace
+        export WIND_WRTOOL_WORKSPACE=$HOME/WindRiver/workspace
 
 * VSB create
 
@@ -46,8 +46,8 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
         wrtool prj vip component add DRV_VXBEND_QRK_GMAC  
         wrtool prj vip component add INCLUDE_SHELL INCLUDE_NETWORK INCLUDE_IFCONFIG INCLUDE_PING  
         wrtool prj vip component add INCLUDE_IBM_BLUEMIX  
-        vxprj vip parameter set DNSC_PRIMARY_NAME_SERVER "\"128.224.160.11\""  
-        vxprj vip parameter set DNSC_SECONDARY_NAME_SERVER "\"147.11.57.128\""  
+        wrtool prj vip parameter set DNSC_PRIMARY_NAME_SERVER   "\"128.224.160.11\""  
+        wrtool prj vip parameter set DNSC_SECONDARY_NAME_SERVER "\"147.11.57.128\""  
 
     The test sample of iotfclient is provided in cfg/usrBluemixDemo.c and in src/bluemixSample.c. It can be used to connect your device to the IBM Bluemix cloud, to publish events to the cloud, and to subscribe to commands from the IBM Bluemix cloud. To enable this sample, you need to add the INCLUDE_BLUEMIX_DEMO component, as shown below: 
 
@@ -55,15 +55,15 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 
     If you want to create a connection to the quickstart service, set parameters as follows:
 
-        vxprj vip parameter set BLUEMIX_QUICKSTART_MODE TRUE
+        wrtool prj vip parameter set BLUEMIX_QUICKSTART_MODE    TRUE
 
     If you want to create a connection to a registered service, set parameters as follows:  
 
-        vxprj vip parameter set BLUEMIX_QUICKSTART_MODE FALSE  
-        vxprj vip parameter set BLUEMIX_DEVICE_ID "\"galileo_bb2b\""  
-        vxprj vip parameter set BLUEMIX_DEVICE_TYPE "\"vx7_Galileo\""  
-        vxprj vip parameter set BLUEMIX_ORG_ID "\"8hvetd\""  
-        vxprj vip parameter set BLUEMIX_TOKEN "\"dhVLQ1U7@yqAffPME7\""  
+        wrtool prj vip parameter set BLUEMIX_QUICKSTART_MODE    FALSE  
+        wrtool prj vip parameter set BLUEMIX_DEVICE_ID          "\"galileo_bb2b\""  
+        wrtool prj vip parameter set BLUEMIX_DEVICE_TYPE        "\"vx7_Galileo\""  
+        wrtool prj vip parameter set BLUEMIX_ORG_ID             "\"8hvetd\""  
+        wrtool prj vip parameter set BLUEMIX_TOKEN              "\"dhVLQ1U7@yqAffPME7\""  
 
 
     NOTE: The values of the above four parameters should be consistent with the information of the device registered in the IBM Watson IoT platform.  
@@ -74,20 +74,20 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 
     Then you can set BLUEMIX_SECURE_CONNECTION to either TRUE or FALSE in the VIP, depending on whether a secure connection is required. The default value is TRUE.  
 
-        vxprj vip parameter set BLUEMIX_SECURE_CONNECTION TRUE  
-        vxprj vip parameter set BLUEMIX_CAFILE_PATH "/romfs/SSLCACert.pem"   
+        wrtool prj vip parameter set BLUEMIX_SECURE_CONNECTION  TRUE  
+        wrtool prj vip parameter set BLUEMIX_CAFILE_PATH        "/romfs/SSLCACert.pem"   
         mkdir romfs   
         cp $WIND_BASE/pkgs/net/cloud/bluemix/certs/SSLCACert.pem ${VIP_DIR}/romfs   
 
     or  
 
-        vxprj vip parameter set BLUEMIX_SECURE_CONNECTION   FALSE  
+        wrtool prj vip parameter set BLUEMIX_SECURE_CONNECTION   FALSE  
 
     The Bluemix sample can also be run in VxWorks user space (i.e., in a VxWorks RTP). A Bluemix RTP file bluemix.vxe is generated in ${VSB_DIR}/usr/root/gnu/bin when building the VSB. To auto-spawn the demo in an RTP, you need to add the INCLUDE_ROMFS component, then set parameter BLUEMIX_RTP_APP to TRUE, and set BLUEMIX_RTP_PATH to "/romfs/bluemix.vxe", as shown below:  
 
         wrtool prj vip component add INCLUDE_ROMFS  
-        vxprj vip parameter set BLUEMIX_RTP_APP TRUE  
-        vxprj vip parameter set BLUEMIX_RTP_PATH "/romfs/bluemix.vxe"  
+        wrtool prj vip parameter set BLUEMIX_RTP_APP            TRUE  
+        wrtool prj vip parameter set BLUEMIX_RTP_PATH           "/romfs/bluemix.vxe"  
         mkdir romfs  
         cp ${VSB_DIR}/usr/root/gnu/bin/bluemix.vxe romfs  
         wrtool prj vip build  
