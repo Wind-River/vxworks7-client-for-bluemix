@@ -15,11 +15,14 @@ Before using this SDK with VxWorks 7, first download the SDK source code from th
     https://github.com/ibm-messaging/iotf-embeddedc.git
 
 You will then need to apply a patch with some small changes that make the IBM Bluemix SDK compatible for VxWorks 7. Some unnecessary files will need to be removed from the SDK directory. These steps are executed by running the script setup.sh found in the directory bluemix/src.   
-Place the bluemix layer in:
+* Download the bluemix layer into VxWorks 7  
 
-    $WIND_BASE/pkgs/net/cloud/bluemix
+    cd $WIND_BASE/pkgs/net/  
+    mkdir cloud  
+    cd cloud  
+    git clone https://github.com/Wind-River/vxworks7-bluemix-sdk bluemix
 
-Then run the setup script:
+* Run the setup script
 
     cd $WIND_BASE/pkgs/net/cloud/bluemix/src 
     ./setup.sh 
