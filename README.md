@@ -27,22 +27,22 @@ You will then need to apply a patch with some small changes that make the IBM Bl
         cd $WIND_BASE/pkgs/net/cloud/bluemix/src 
         ./setup.sh 
 
-### VSB and VIP creation
+### VSB and VIP creation using WrTool
 
-The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be created using either the Wind River Workbench environment or the command line tool wrtool. Below are the steps to create them using wrtool, with the itl_quark BSP as an example.  
+The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be created using either the Wind River Workbench environment or the command line tool WrTool. Below are the steps to create them using WrTool, with the itl_quark BSP as an example.  
 
 * Set environment variable
 
         export WIND_WRTOOL_WORKSPACE=$HOME/WindRiver/workspace
 
-* VSB create
+* Create VSB using WrTool
 
         wrtool prj vsb create -force -bsp itl_quark vsb_PENTIUM_32_up -S      
         cd vsb_PENTIUM_32_up      
         wrtool prj vsb add IBM_BLUEMIX     
         make -j     
 
-* VIP create
+* Create VIP using WrTool
 
         wrtool prj vip create -force -vsb vsb_PENTIUM_32_up itl_quark gnu vip_quark_kernel -profile PROFILE_STANDALONE_DEVELOPMENT  
         cd vip_quark_kernel  
@@ -97,16 +97,40 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 
     Now you can bring up your device, and it will auto-run the Bluemix SDK in a VxWorks RTP. 
 
+### VSB and VIP creation using workbench
+
+* Create VSB using workbench
+
+    - Open Workbench 4, click File -> New -> Wind River Workbench Project, and select "Build type" as "Source Build", setup the project based on board support package or CPU.
+
+    - After creating VSB project, Open "Source Build Configuration" in project explorer of vsb_itl_quark_1, find IBM BLEMIX layer in net option folder, right click and then click "Add with Dependencies" to add IBM_BLUEMIX layer, as shown in the figure below.
+
+    ![](doc/media/vsb_source_build_configuration.png)
+
+    - Use the same way to add OPENSSL layer in this project. In the last, save the configuration and build the VSB.
+
+* Create VIP using workbench
+
+    - After you done VSB building, click File -> New -> Wind River Workbench Project, and select "Build type" as "Kernel Image". Setup the project based on existed VSB vsb_itl_quark_1 which has already created in the above section and then select profile as "PROFILE_STANDALONE_DEVELOPMENT".
+
+    - After creating VIP project, you need to configure components and parameters in "Kernel Configuration" in VIP project explorer as shown in the figure below.
+
+    ![](doc/media/vip_kernel_configuration.png)
+
+    - You need to include the component INCLUDE_IBM_BLUEMIX. If you want to run a demo, you also need to include the component IBM_BLUEMIX_DEMO. About how to set parameters, you can refer to the above section "Create VIP using WrTool".
+
 ### View the device information at website
 
 You can run your device image with the Bluemix SDK and then view the device information dashboard at the IBM Bluemix website.
 
 * For the quickstart connection  
-    View connection status here:  
+    View connection status here:
 
     'https://quickstart.internetofthings.ibmcloud.com/#/device/'
 
-    Note: The device MAC address needs to be entered on this page, and it must be in lower case. 
+    Note: The device MAC address needs to be entered on this page, and it must be in lower case as shown in the figure below:
+
+    ![](doc/media/quickstart_connection_state.png)
 
 * For the registered connection  
     View the device connection status here:  
@@ -115,7 +139,11 @@ You can run your device image with the Bluemix SDK and then view the device info
 
     Replace ${ORG_ID} with your organization's ID that is registered in IBM Bluemix. For example:
 
-    'https://8hvetd.internetofthings.ibmcloud.com/dashboard/#/devices/browse'  
+    'https://8hvetd.internetofthings.ibmcloud.com/dashboard/#/devices/browse'
+
+    Connection status is showed in the figure below:
+
+    ![](doc/media/registered_device_connection_state.png)
 
 * View application dashboard  
     You can also create the Node-RED application in the IBM Bluemix platform and view the application dashboard here:
