@@ -105,9 +105,9 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 
     Now you can bring up your device, and it will auto-run the Bluemix SDK in a VxWorks RTP. 
 
-### VSB and VIP creation using workbench
+### VSB and VIP creation using Workbench
 
-* Create VSB using workbench
+* Create VSB using Workbench
 
 1.  Open Workbench 4
 2.  Click File > New > Wind River Workbench Project
@@ -123,7 +123,7 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 9.  Click File > Save to save the source build configuration
 10. Right-click the vsb_itl_quark_1 in the project explorer and then click "Build Project" to build the VSB.
 
-* Create VIP using workbench
+* Create VIP using Workbench
 
 1.  After you have built the VSB, click File > New > Wind River Workbench Project
 2.  Set "Build type" to "Kernel Image"
