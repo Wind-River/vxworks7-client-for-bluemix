@@ -8,11 +8,17 @@
 
 This README page provides a quick summary of how to build and run the IBM Bluemix SDK that will reside in VxWorks 7 on your device. The IBM Bluemix SDK is an embedded C client library for interacting with the IBM Watson Internet of Things (IoT) Platform. This client library is not provided in VxWorks 7 RPM packages or on the VxWorks 7 product DVDs . You will need to manually install this library on VxWorks 7.
 
-### Installation
+### Prerequisite
 
-The IBM Bluemix SDK source code is available from the maintainer's website:
+Before install the Bluemix SDK in VxWorks 7, please prepare your development environment:  
+1. Install git and make sure git can be run from a command line.  
+2. Bash is required in your enviroment, for Windows you can use git bash.  
+3. Make sure VxWorks 7 DVD has been installed.  
+4. Make sure the IBM Bluemix SDK source code is available from the maintainer's website:
 
         https://github.com/ibm-messaging/iotf-embeddedc.git
+
+### Installation
 
 First, you need to download the VxWorks 7 IBM Bluemix layer from:
 
