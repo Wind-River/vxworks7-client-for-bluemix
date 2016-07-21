@@ -1,0 +1,506 @@
+SPDXVersion: SPDX-1.2
+DataLicense: CC0-1.0
+DocumentComment: <text>This file contains Low Definition SPDX data. Low Definition data is created by using computer automation analysis on the source code files contained in the package. DISCLAIMER: This document is provided "as is" without any warranty whatsoever. This documentation may not be referenced or relied upon for its accuracy or comprehensiveness, or to determine legal obligations with respect to open source code contained in the software package it represents. Such determinations should be based upon recipient's independent legal analysis and by reference to the notices and licenses contained within the open source code itself. Wind River may change the contents of this document at any time at its sole discretion, and Wind River shall have no liability whatsoever arising from recipient's use of this information. </text>
+
+##-------------------------
+## Creation Information
+##-------------------------
+
+Creator: Tool: The Duke of Highlander
+Created: 2016-07-20T23:59:14Z
+CreatorComment: <text> DISCLAIMER: This document is provided "as is" without any warranty whatsoever. This documentation may not be referenced or relied upon for its accuracy or comprehensiveness, or to determine legal obligations with respect to open source code contained in the software package it represents. Such determinations should be based upon recipient's independent legal analysis and by reference to the notices and licenses contained within the open source code itself. Wind River may change the contents of this document at any time at its sole discretion, and Wind River shall have no liability whatsoever arising from recipient's use of this information.</text>
+LicenseListVersion: 1.19
+
+
+##-------------------------
+## Package Information
+##-------------------------
+
+PackageName: vxworks7-bluemix-sdk-master.zip
+PackageFileName: vxworks7-bluemix-sdk-master.zip
+PackageDownloadLocation: NOASSERTION
+PackageVerificationCode: 972cc0e81c915ae777951b38f9b559f966311202
+PackageChecksum: SHA1: f9bd158244804bc59d3192d7f59e5bcc58fdf668
+PackageLicenseConcluded: BSD-3-Clause
+PackageLicenseDeclared: BSD-3-Clause
+PackageLicenseInfoFromFiles: BSD-3-Clause
+PackageCopyrightText: NOASSERTION
+
+
+
+##--------------------------
+## File Information
+##--------------------------
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\src\Makefile
+FileType: OTHER
+FileChecksum: SHA1: 4ab86c8259c1a4dce78603a677fa5187fae95885
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+#
+# redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> # Copyright (c) 2016, Wind River Systems, Inc.
+#
+# Redistribution and use in source and binary forms, with or without modification, are
+# permitted provided that the following conditions are met:
+#
+# 1) Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2) Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# 3) Neither the name of Wind River Systems nor the names of its contributors may be
+# used to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\cdf\11bluemix_sdk.cdf
+FileType: OTHER
+FileChecksum: SHA1: 3a65be0eeb15eedb65a36fc82db3579dfb28bf0e
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+ *
+ * redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> /* 11folder_bluemix_sdk.cdf - Bluemix SDK component description file */
+/* Copyright (c) 2016, Wind River Systems, Inc.
+*
+* Redistribution and use in source and binary forms, with or without modification, are
+* permitted provided that the following conditions are met:
+*
+* 1) Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* 2) Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation and/or
+* other materials provided with the distribution.
+*
+* 3) Neither the name of Wind River Systems nor the names of its contributors may be
+* used to endorse or promote products derived from this software without specific
+* prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+#ifdef _WRS_CONFIG_OPENSSL
+#else
+#endif
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\src\patch\iotfclient-vxworks.patch
+FileType: OTHER
+FileChecksum: SHA1: c6eca2307af22f729038e8193bcf2baf70419b6c
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: <text> http://www.eclipse.org/org/documents/edl-v10.php, http://www.eclipse.org/legal/epl-v10.html, copyright (c) 2014 at&t m2x
++ *
++ * permission is hereby granted, free of charge, to any person obtaining a copy, copyright (c) 2016, wind river systems, inc.
++ *
++ * redistribution and use in source and binary forms, with or without modification, are, copyright (c) 2014 ibm corp.
+- *
+- * all rights reserved. this program and the accompanying materials </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\README.md
+FileType: OTHER
+FileChecksum: SHA1: 22c4c986cbee1647e0097e463cb14209190126ca
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: <text> https://console.ng.bluemix.net/?direct=classic/#/resources'', https://8hvetd.internetofthings.ibmcloud.com/dashboard/#/devices/browse'', https://${org_id}.internetofthings.ibmcloud.com/dashboard/#/devices/browse'', https://quickstart.internetofthings.ibmcloud.com/#/device/'', https://github.com/wind-river/vxworks7-bluemix-sdk, https://github.com/wind-river/vxworks7-bluemix-sdk.git, https://github.com/ibm-messaging/iotf-embeddedc.git </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\cdf\10iot.cdf
+FileType: OTHER
+FileChecksum: SHA1: 434dfa30b998c50923f78950cfe60bb16c708323
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+ *
+ * redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> /* 00iot.cdf - IoT component description file */
+/* Copyright (c) 2016, Wind River Systems, Inc.
+*
+* Redistribution and use in source and binary forms, with or without modification, are
+* permitted provided that the following conditions are met:
+*
+* 1) Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* 2) Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation and/or
+* other materials provided with the distribution.
+*
+* 3) Neither the name of Wind River Systems nor the names of its contributors may be
+* used to endorse or promote products derived from this software without specific
+* prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\certs\SSLCACert.pem
+FileType: OTHER
+FileChecksum: SHA1: 11fb1974116ac25c1260139c70bdce58a08f87c2
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\cfg\usrBluemixDemo.c
+FileType: SOURCE
+FileChecksum: SHA1: a5d1ab838378e64231b29699ce113e57027000bd
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+ *
+ * redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> /* usrBluemixDemo.c - Bluemix sdk sample initialization */
+/* Copyright (c) 2016, Wind River Systems, Inc.
+*
+* Redistribution and use in source and binary forms, with or without modification, are
+* permitted provided that the following conditions are met:
+*
+* 1) Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* 2) Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation and/or
+* other materials provided with the distribution.
+*
+* 3) Neither the name of Wind River Systems nor the names of its contributors may be
+* used to endorse or promote products derived from this software without specific
+* prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/* get MAC from first interface */
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\doc\media\vsb_source_build_configuration.png
+FileType: OTHER
+FileChecksum: SHA1: 1e663400f35f83fc20e304f5277c7fde52d626c8
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\doc\media\vip_kernel_configuration.png
+FileType: OTHER
+FileChecksum: SHA1: 216f6d07b393abd93ae968bf042dbfab4db71534
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\doc\media\registered_device_connection_state.png
+FileType: OTHER
+FileChecksum: SHA1: dd1ec7c9a9941a3078219e17e1483302c7198337
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\doc\media\quickstart_connection_state.png
+FileType: OTHER
+FileChecksum: SHA1: 1a551ec5834d82a84431d21d5e70f23a0c68862d
+LicenseConcluded: NOASSERTION
+LicenseInfoInFile: NOASSERTION
+FileCopyrightText: NOASSERTION
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\rtpsample\rtpSample.c
+FileType: SOURCE
+FileChecksum: SHA1: fce76088f15968195123d87b323d388fe61f618b
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+ *
+ * redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> /* rtpSample.c - Bluemix sdk rtp application */
+/* Copyright (c) 2016, Wind River Systems, Inc.
+*
+* Redistribution and use in source and binary forms, with or without modification, are
+* permitted provided that the following conditions are met:
+*
+* 1) Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* 2) Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation and/or
+* other materials provided with the distribution.
+*
+* 3) Neither the name of Wind River Systems nor the names of its contributors may be
+* used to endorse or promote products derived from this software without specific
+* prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\rtpsample\Makefile
+FileType: OTHER
+FileChecksum: SHA1: 050c1016fd18ca0acd18f2510a18b131d12490ab
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+#
+# redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> # Copyright (c) 2016, Wind River Systems, Inc.
+#
+# Redistribution and use in source and binary forms, with or without modification, are
+# permitted provided that the following conditions are met:
+#
+# 1) Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2) Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# 3) Neither the name of Wind River Systems nor the names of its contributors may be
+# used to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\src\setup.sh
+FileType: SOURCE
+FileChecksum: SHA1: 087ebbc4c2788f539d2940c5f053840da05240fa
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> https://github.com/ibm-messaging/iotf-embeddedc.git, copyright (c) 2016, wind river systems, inc.
+#
+# redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> #!/bin/bash
+# Copyright (c) 2016, Wind River Systems, Inc.
+#
+# Redistribution and use in source and binary forms, with or without modification, are
+# permitted provided that the following conditions are met:
+#
+# 1) Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2) Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# 3) Neither the name of Wind River Systems nor the names of its contributors may be
+# used to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# tested with commit 33ab383221ca67e7e3f7a5e297883e7861912fe0 (Fri Mar 11 12:00:57 2016 +0530)
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\src\bluemixSample.c
+FileType: SOURCE
+FileChecksum: SHA1: d4d631fbd35cda820ece8aaeea1d26ea1b802089
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> https://%s.internetofthings.ibmcloud.com/dashboard/#/devices/browse n", https://quickstart.internetofthings.ibmcloud.com/#/device/%s n", copyright (c) 2016, wind river systems, inc.
+ *
+ * redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> /* bluemixSample.c - Bluemix sdk sample codes */
+/* Copyright (c) 2016, Wind River Systems, Inc.
+*
+* Redistribution and use in source and binary forms, with or without modification, are
+* permitted provided that the following conditions are met:
+*
+* 1) Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* 2) Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation and/or
+* other materials provided with the distribution.
+*
+* 3) Neither the name of Wind River Systems nor the names of its contributors may be
+* used to endorse or promote products derived from this software without specific
+* prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+/*  payload format is like: {"d":{"temp":75.83996}} */
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\Makefile
+FileType: OTHER
+FileChecksum: SHA1: 0d5554780beb9c3151b409c6987f342ce54f329e
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+#
+# redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> # Copyright (c) 2016, Wind River Systems, Inc.
+#
+# Redistribution and use in source and binary forms, with or without modification, are
+# permitted provided that the following conditions are met:
+#
+# 1) Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
+#
+# 2) Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation and/or
+# other materials provided with the distribution.
+#
+# 3) Neither the name of Wind River Systems nor the names of its contributors may be
+# used to endorse or promote products derived from this software without specific
+# prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ </text>
+
+##File
+
+FileName: vxworks7-bluemix-sdk-master.zipcc58fdf668\vxworks7-bluemix-sdk-master\layer.vsbl
+FileType: OTHER
+FileChecksum: SHA1: a24d67e1810bf806a4461ae97404d1829ea8d5b9
+LicenseConcluded: BSD-3-Clause
+LicenseInfoInFile: BSD-3-Clause
+FileCopyrightText: <text> copyright (c) 2016, wind river systems, inc.
+ *
+ * redistribution and use in source and binary forms, with or without modification, are </text>
+FileNotice: <text> /* layer.vsbl file for BlueMix SDK layer */
+/* Copyright (c) 2016, Wind River Systems, Inc.
+*
+* Redistribution and use in source and binary forms, with or without modification, are
+* permitted provided that the following conditions are met:
+*
+* 1) Redistributions of source code must retain the above copyright notice,
+* this list of conditions and the following disclaimer.
+*
+* 2) Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation and/or
+* other materials provided with the distribution.
+*
+* 3) Neither the name of Wind River Systems nor the names of its contributors may be
+* used to endorse or promote products derived from this software without specific
+* prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+* USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+ </text>
+
+##--------------------
+## Review Information
+##--------------------
+Reviewer: Tool: The Duke of Highlander
+ReviewDate: 2016-07-20T23:59:14Z
+ReviewComment: <text> The analysis has been completely performed by an automated tool.  [---Q:LD,F:1.4,H:1.1,SV:1.2---]</text>
