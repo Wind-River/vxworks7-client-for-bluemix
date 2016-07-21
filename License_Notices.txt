@@ -1,6 +1,6 @@
 Wind River® VxWorks7® Client for IBM® Bluemix® Project 
 
-						Third Party Notices 
+		Third Party Notices 
 ----------------------------------------------------------------- 
 
 Copyright (c) 2016, Wind River Systems, Inc.
