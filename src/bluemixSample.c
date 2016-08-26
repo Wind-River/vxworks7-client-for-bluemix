@@ -38,6 +38,7 @@
 
 #define VX_IOTF_TASK_PRI        100
 #define VX_IOTF_TASK_STK        (16 * 1024)
+#define SIM_DATA_LEN            100
 
 int connect_status = 0;
 
@@ -76,10 +77,9 @@ void handle_cmd_cb (char *commandName, char *format, void *payload)
 /* This routine get random temperature data
  * for device to publish to WATSON IoT platform
  */
-char *getRandomData(void)
+char *getRandomData(char* sensor_data)
 {
     double temperature, humidity;
-    char *sensor_data;    /* simulated data */
 
     /*
      * generate a group of double type data,
@@ -90,6 +90,8 @@ char *getRandomData(void)
     temperature = (100.0*rand()/(RAND_MAX+1.0));
     humidity = (50.0*rand()/(RAND_MAX+1.0));
 
+    memset(sensor_data, 0, sizeof(sensor_data));
+
 #ifdef _WRS_CONFIG_JSON
     json_t *root,*d_node;
 
@@ -98,10 +100,13 @@ char *getRandomData(void)
     if(!json_is_object(root))
         printf("json_pack root data failed\n");
 
-    sensor_data = json_dumps(root,0);
+    char *json_dump = json_dumps(root,0);
+    strcpy(sensor_data, json_dump);
+    free(json_dump);
+    json_decref(d_node);
     json_decref(root);
 #else
-    sprintf (sensor_data, "{\"d\" : {\"temp\" : %.2f,\"humid\" : %.2f}}", temperature, humidity);
+    snprintf (sensor_data + strlen(sensor_data), SIM_DATA_LEN, "{\"d\" : {\"temp\" : %.2f,\"humid\" : %.2f}}", temperature, humidity);
 #endif
 
     return sensor_data;
@@ -164,8 +169,11 @@ int vx_iotf_task(BOOL with_quick, BOOL with_ssl, char *deviceType,
         printf("View the visualization at https://%s.internetofthings.ibmcloud.com/dashboard/#/devices/browse\n", bmOrg);
 
     setCommandHandler(&client, handle_cmd_cb);
+
+    char* sensor_data = (char *)malloc(SIM_DATA_LEN + 1);    /* simulated data */
+
     while(!connect_status) {
-        rc= publishEvent(&client,"status","json", (unsigned char*)getRandomData(), QOS0);
+        rc= publishEvent(&client,"status","json", (unsigned char*)getRandomData(sensor_data), QOS0);
         if(rc == -1) {
             printf("Network may be disconnected\n");
             break;
@@ -176,7 +184,7 @@ int vx_iotf_task(BOOL with_quick, BOOL with_ssl, char *deviceType,
     }
 
     printf("Connection Quitting!!\n");
-
+    free(sensor_data);
     disconnect(&client);
     return 0;
 }

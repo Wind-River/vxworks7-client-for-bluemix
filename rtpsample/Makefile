@@ -31,9 +31,13 @@ RTP_BASE_DIR = rtpsample
 
 OBJS =  rtpSample.o 
 
-ADDED_LIBS += -lbluemix -ljson
+ADDED_LIBS += -lbluemix
 
 include $(WIND_USR_MK)/defs.library.mk
+
+ifdef _WRS_CONFIG_JSON
+ADDED_LIBS += -ljson
+endif
 
 ifdef _WRS_CONFIG_OPENSSL
 ADDED_LIBS += -lHASH
