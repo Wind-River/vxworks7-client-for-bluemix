@@ -66,7 +66,7 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
         wrtool prj vip component add DRV_VXBEND_QRK_GMAC  
         wrtool prj vip component add INCLUDE_SHELL INCLUDE_NETWORK INCLUDE_IFCONFIG INCLUDE_PING  
         wrtool prj vip component add INCLUDE_IBM_BLUEMIX  
-        wrtool prj vip parameter set DNSC_PRIMARY_NAME_SERVER   "\"128.224.160.11\""  
+        wrtool prj vip parameter set DNSC_PRIMARY_NAME_SERVER   "\"128.224.160.11\""  ///< Please replace "128.224.160.11" with your own DNS server address.  
         wrtool prj vip parameter set DNSC_SECONDARY_NAME_SERVER "\"147.11.57.128\""  
 
     The test sample of iotfclient is provided in cfg/usrBluemixDemo.c and in src/bluemixSample.c. It can be used to connect your device to the IBM Bluemix cloud, to publish events to the cloud, and to subscribe to commands from the IBM Bluemix cloud. To enable this sample, you need to add the INCLUDE_BLUEMIX_DEMO component, as shown below: 
@@ -95,23 +95,32 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
     Then you can set BLUEMIX_SECURE_CONNECTION to either TRUE or FALSE in the VIP, depending on whether a secure connection is required. The default value is TRUE.  
 
         wrtool prj vip parameter set BLUEMIX_SECURE_CONNECTION  TRUE  
-        wrtool prj vip component add INCLUDE_ROMFS  
         wrtool prj vip parameter set BLUEMIX_CAFILE_PATH        "\"/romfs/SSLCACert.pem\""  
-        mkdir romfs   
-        cp $WIND_BASE/pkgs/net/cloud/bluemix/certs/SSLCACert.pem ${VIP_DIR}/romfs   
+
+        cd $WIND_WRTOOL_WORKSPACE  
+        wrtool prj romfs create romfs  
+        wrtool prj romfs add -file $WIND_BASE/pkgs/net/cloud/bluemix/certs/SSLCACert.pem romfs   
+        wrtool prj subproject add romfs vip_quark_kernel  
+        cd $WIND_WRTOOL_WORKSPACE/vip_quark_kernel  
 
     or  
 
         wrtool prj vip parameter set BLUEMIX_SECURE_CONNECTION   FALSE  
 
+        wrtool prj build  
+
     The Bluemix sample can also be run in VxWorks user space (i.e., in a VxWorks RTP). A Bluemix RTP file bluemix.vxe is generated in ${VSB_DIR}/usr/root/gnu/bin when building the VSB. To auto-spawn the demo in an RTP, you need to add the INCLUDE_ROMFS component, then set parameter BLUEMIX_RTP_APP to TRUE, and set BLUEMIX_RTP_PATH to "/romfs/bluemix.vxe", as shown below:  
 
-        wrtool prj vip component add INCLUDE_ROMFS  
         wrtool prj vip parameter set BLUEMIX_RTP_APP            TRUE  
         wrtool prj vip parameter set BLUEMIX_RTP_PATH           "\"/romfs/bluemix.vxe\""  
-        mkdir romfs  
-        cp ${VSB_DIR}/usr/root/gnu/bin/bluemix.vxe romfs  
-        wrtool prj vip build  
+
+        cd $WIND_WRTOOL_WORKSPACE  
+        wrtool prj romfs create romfs  
+        wrtool prj romfs add -file ${VSB_DIR}/usr/root/gnu/bin/bluemix.vxe romfs   
+        wrtool prj subproject add romfs vip_quark_kernel  
+        cd $WIND_WRTOOL_WORKSPACE/vip_quark_kernel  
+
+        wrtool prj build  
 
     Now you can bring up your device, and it will auto-run the Bluemix SDK in a VxWorks RTP. 
 
@@ -147,7 +156,11 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 7.  You'll need to include the component INCLUDE_IBM_BLUEMIX. If you want to run the Bluemix SDK demo provided in src/bluemixSample.c, you also need to include the component IBM_BLUEMIX_DEMO
 8.  For information on setting parameters, refer to the above section "Create VIP using WrTool"
 9.  Click File->Save to save the components configuration
-10. Right-click the vip_itl_quark_1 in the project explorer and then click "Build Project" to build the VIP
+10. Click File > New > Project > VxWorks 7 > VxWorks ROMFS File System Project, name the project romfs and set the Superproject to your VIP project.
+11. Click Add external and add the files you want to store in romfs to the ROMFS project.
+12. Right-click the vip_itl_quark_1 in the project explorer and then click "Build Project" to build the VIPi.
+
+    Note: If you don't want to store cert file or other files in romfs, you can skip step 10 and 11.  
 
 ### View the device information at website
 
