@@ -67,7 +67,7 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
         wrtool prj vip component add INCLUDE_SHELL INCLUDE_NETWORK INCLUDE_IFCONFIG INCLUDE_PING  
         wrtool prj vip component add INCLUDE_IBM_BLUEMIX  
         wrtool prj vip parameter set DNSC_PRIMARY_NAME_SERVER   "\"128.224.160.11\""  ///< Please replace "128.224.160.11" with your own DNS server address.  
-        wrtool prj vip parameter set DNSC_SECONDARY_NAME_SERVER "\"147.11.57.128\""  
+        wrtool prj vip parameter set DNSC_SECONDARY_NAME_SERVER "\"147.11.57.128\""  ///< Please replace "147.11.57.128" with your own DNS server address. 
 
     The test sample of iotfclient is provided in cfg/usrBluemixDemo.c and in src/bluemixSample.c. It can be used to connect your device to the IBM Bluemix cloud, to publish events to the cloud, and to subscribe to commands from the IBM Bluemix cloud. To enable this sample, you need to add the INCLUDE_BLUEMIX_DEMO component, as shown below: 
 
@@ -158,7 +158,7 @@ The VxWorks 7 VSB (VxWorks Source Build) and VIP (VxWorks Image Project) can be 
 9.  Click File->Save to save the components configuration
 10. Click File > New > Project > VxWorks 7 > VxWorks ROMFS File System Project, name the project romfs and set the Superproject to your VIP project.
 11. Click Add external and add the files you want to store in romfs to the ROMFS project.
-12. Right-click the vip_itl_quark_1 in the project explorer and then click "Build Project" to build the VIPi.
+12. Right-click the vip_itl_quark_1 in the project explorer and then click "Build Project" to build the VIP.
 
     Note: If you don't want to store cert file or other files in romfs, you can skip step 10 and 11.  
 
