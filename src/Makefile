@@ -59,3 +59,8 @@ include $(WIND_USR_MK)/rules.library.mk
 else
 include $(WIND_KRNL_MK)/rules.library.mk
 endif
+
+#
+# this code is 3rd party. Suppress all compiler warnings
+#
+CC_WARNINGS = $(CC_WARNINGS_NONE)
