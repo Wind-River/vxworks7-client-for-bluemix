@@ -149,10 +149,10 @@ void usrBluemixDemoInit (void)
                 {
                 printf("Warning! System clock is %s", ctime ((time_t *)&tval.tv_sec));
 
-                /* Set time to May 1, 2016 */
+                /* Set time to Nov 1, 2017 */
 
-                tms.tm_year  = 116;
-                tms.tm_mon   = 4;
+                tms.tm_year  = 117;
+                tms.tm_mon   = 10;
                 tms.tm_mday  = 1;
                 tval.tv_sec  = mktime(&tms);
                 tval.tv_usec = 0;
