@@ -66,10 +66,10 @@ index b9d5ab6..d98fc30 100644
  //Macros for the device management requests
  #define MANAGE "iotdevice-1/mgmt/manage"
 diff --git a/gatewayclient.c b/gatewayclient.c
-index 86fc4ea..f9bd72f 100644
+index 86fc4ea..a334ce4 100644
 --- a/gatewayclient.c
 +++ b/gatewayclient.c
-@@ -22,7 +22,7 @@
+@@ -22,15 +22,15 @@
  #include "gatewayclient.h"
  
  //Command Callback
@@ -77,7 +77,21 @@ index 86fc4ea..f9bd72f 100644
 +commandCallback gateway_cb;
  
  //util functions
- char *trim(char *str);
+-char *trim(char *str);
+-int get_config(char * filename, struct config * configstr);
+-void messageArrived(MessageData* md);
+-int length(char *str);
+-int retry_connection(GatewayClient *client);
+-int reconnect_delay(int i);
++static char *trim(char *str);
++static int get_config(char * filename, struct config * configstr);
++static void messageArrived(MessageData* md);
++static int length(char *str);
++static int retry_connection(GatewayClient *client);
++static int reconnect_delay(int i);
+ 
+ char* subscribeTopics[5];
+ int subscribeCount = 0;
 @@ -236,7 +236,7 @@ int publishGatewayEvent(GatewayClient *client, char *eventType, char *eventForma
  */
  void setGatewayCommandHandler(GatewayClient *client, commandCallback handler)
@@ -87,9 +101,12 @@ index 86fc4ea..f9bd72f 100644
  }
  
  /**
-@@ -332,7 +332,7 @@ int disconnectGateway(GatewayClient *client)
+@@ -330,9 +330,9 @@ int disconnectGateway(GatewayClient *client)
+ }
+ 
  //Handler for all commands. Invoke the callback.
- void messageArrived(MessageData* md)
+-void messageArrived(MessageData* md)
++static void messageArrived(MessageData* md)
  {
 -	if(cb != 0) {
 +	if(gateway_cb != 0) {
@@ -105,6 +122,55 @@ index 86fc4ea..f9bd72f 100644
  	}
  }
  
+@@ -364,7 +364,7 @@ void messageArrived(MessageData* md)
+ //Utility Functions
+ 
+ //Trimming characters
+-char *trim(char *str) {
++static char *trim(char *str) {
+ 	size_t len = 0;
+ 	char *frontp = str - 1;
+ 	char *endp = NULL;
+@@ -399,7 +399,7 @@ char *trim(char *str) {
+ }
+ 
+ // This is the function to read the config from the device.cfg file
+-int get_config(char * filename, struct config * configstr) {
++static int get_config(char * filename, struct config * configstr) {
+ 
+ 	FILE* prop;
+ 	char str1[10], str2[10];
+@@ -437,7 +437,7 @@ int get_config(char * filename, struct config * configstr) {
+ 	return SUCCESS;
+ }
+ 
+-int length(char *str)
++static int length(char *str)
+ {
+ 	int length = 0;
+ 
+@@ -448,7 +448,7 @@ int length(char *str)
+ }
+ 
+ //Staggered retry
+-int retry_connection(GatewayClient *client) 
++static int retry_connection(GatewayClient *client)
+ {
+ 	int retry = 1;
+ 	printf("Attempting to connect\n");
+@@ -462,10 +462,10 @@ int retry_connection(GatewayClient *client)
+ 	}
+ }
+ 
+-/* Reconnect delay time 
++/* Reconnect delay time
+  * depends on the number of failed attempts
+  */
+-int reconnect_delay(int i) 
++static int reconnect_delay(int i)
+ {
+ 	if (i < 10) {
+ 		return 3; // first 10 attempts try every 3 seconds
 @@ -474,4 +474,4 @@ int reconnect_delay(int i)
  		return 60; // next 10 attempts retry after every 1 minute
  
@@ -113,10 +179,10 @@ index 86fc4ea..f9bd72f 100644
 \ No newline at end of file
 +}
 diff --git a/iotfclient.c b/iotfclient.c
-index 3d1ea92..b0c6e21 100644
+index 3d1ea92..238673d 100644
 --- a/iotfclient.c
 +++ b/iotfclient.c
-@@ -24,7 +24,7 @@
+@@ -24,15 +24,15 @@
  #include "iotfclient.h"
  
  //Command Callback
@@ -124,8 +190,22 @@ index 3d1ea92..b0c6e21 100644
 +commandCallback iotf_cb;
  
  //util functions
- char *trim(char *str);
-@@ -119,17 +119,36 @@ int connectiotf(Iotfclient *client)
+-char *trim(char *str);
+-int get_config(char * filename, struct config * configstr);
+-void messageArrived(MessageData* md);
+-int length(char *str);
+-int retry_connection(Iotfclient *client);
+-int reconnect_delay(int i);
++static char *trim(char *str);
++static int get_config(char * filename, struct config * configstr);
++static void messageArrived(MessageData* md);
++static int length(char *str);
++static int retry_connection(Iotfclient *client);
++static int reconnect_delay(int i);
+ 
+ 
+ /**
+@@ -119,20 +119,39 @@ int connectiotf(Iotfclient *client)
  	const char* messagingUrl = ".messaging.internetofthings.ibmcloud.com";
  
  	char hostname[strlen(client->config.org) + strlen(messagingUrl) + 1];
@@ -166,9 +246,14 @@ index 3d1ea92..b0c6e21 100644
 +    memset(client->buf, 0, sizeof(client->buf));
 +    memset(client->readbuf, 0, sizeof(client->readbuf));
  	MQTTClient(&client->c, &client->n, 1000, client->buf, 1000, client->readbuf, 1000);
-  
- 	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;       
-@@ -185,8 +204,9 @@ int publishEvent(Iotfclient *client, char *eventType, char *eventFormat, unsigne
+- 
+-	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;       
++
++	MQTTPacket_connectData data = MQTTPacket_connectData_initializer;
+ 	data.willFlag = 0;
+ 	data.MQTTVersion = 3;
+ 	data.clientID.cstring = clientId;
+@@ -185,10 +204,11 @@ int publishEvent(Iotfclient *client, char *eventType, char *eventFormat, unsigne
  
  	if(rc != SUCCESS) {
  		printf("connection lost.. \n");
@@ -177,8 +262,11 @@ index 3d1ea92..b0c6e21 100644
 -		rc = MQTTPublish(&client->c, publishTopic , &pub);
 +	    rc = MQTTPublish(&client->c, publishTopic , &pub);
  	}
- 	
+-	
++
  	return rc;
+ 
+ }
 @@ -201,7 +221,7 @@ int publishEvent(Iotfclient *client, char *eventType, char *eventFormat, unsigne
  */
  void setCommandHandler(Iotfclient *client, commandCallback handler)
@@ -188,7 +276,7 @@ index 3d1ea92..b0c6e21 100644
  }
  
  /**
-@@ -249,8 +269,18 @@ int isConnected(Iotfclient *client)
+@@ -249,24 +269,35 @@ int isConnected(Iotfclient *client)
  int disconnect(Iotfclient *client)
  {
  	int rc = 0;
@@ -208,9 +296,11 @@ index 3d1ea92..b0c6e21 100644
  
  	return rc;
  
-@@ -259,14 +289,15 @@ int disconnect(Iotfclient *client)
+ }
+ 
  //Handler for all commands. Invoke the callback.
- void messageArrived(MessageData* md)
+-void messageArrived(MessageData* md)
++static void messageArrived(MessageData* md)
  {
 -	if(cb != 0) {
 +	if(iotf_cb != 0) {
@@ -237,16 +327,43 @@ index 3d1ea92..b0c6e21 100644
  	}
  }
  
+@@ -285,7 +318,7 @@ void messageArrived(MessageData* md)
+ //Utility Functions
+ 
+ //Trimming characters
+-char *trim(char *str) {
++static char *trim(char *str) {
+ 	size_t len = 0;
+ 	char *frontp = str - 1;
+ 	char *endp = NULL;
+@@ -320,7 +353,7 @@ char *trim(char *str) {
+ }
+ 
+ // This is the function to read the config from the device.cfg file
+-int get_config(char * filename, struct config * configstr) {
++static int get_config(char * filename, struct config * configstr) {
+ 
+ 	FILE* prop;
+ 	char str1[10], str2[10];
+@@ -358,7 +391,7 @@ int get_config(char * filename, struct config * configstr) {
+ 	return SUCCESS;
+ }
+ 
+-int length(char *str)
++static int length(char *str)
+ {
+ 	int length = 0;
+ 
 @@ -369,7 +402,7 @@ int length(char *str)
  }
  
  //Staggered retry
 -int retry_connection(Iotfclient *client) 
-+int retry_connection(Iotfclient *client)
++static int retry_connection(Iotfclient *client)
  {
  	int retry = 1;
  	printf("Attempting to connect\n");
-@@ -381,6 +414,10 @@ int retry_connection(Iotfclient *client)
+@@ -381,12 +414,16 @@ int retry_connection(Iotfclient *client)
  		printf(" next attempt in %d seconds\n", delay);
  		sleep(delay);
  	}
@@ -256,7 +373,15 @@ index 3d1ea92..b0c6e21 100644
 +
  }
  
- /* Reconnect delay time 
+-/* Reconnect delay time 
++/* Reconnect delay time
+  * depends on the number of failed attempts
+  */
+-int reconnect_delay(int i) 
++static int reconnect_delay(int i)
+ {
+ 	if (i < 10) {
+ 		return 3; // first 10 attempts try every 3 seconds
 diff --git a/iotfclient.h b/iotfclient.h
 index 140b0a6..804aa36 100644
 --- a/iotfclient.h
